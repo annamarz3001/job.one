@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Onda Interativa - p5.js</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/addons/p5.sound.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #1a1a1a;
+            overflow: hidden;
+        }
+
+        #p5-container {
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .back-link {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(102, 126, 234, 0.8);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+            font-weight: 600;
+        }
+
+        .back-link:hover {
+            background: rgba(102, 126, 234, 1);
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                font-size: 0.75rem;
+                padding: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="p5-container"></div>
+
+    <div class="controls">
+        <p>💡 Toque/Clique para fazer sons!</p>
+        <p>👆 Mova seu dedo/mouse para distorcer a onda</p>
+    </div>
+
+    <a href="../index.html" class="back-link">← Voltar</a>
+
+    <script>
+        let espacamento = 15; 
+        let osc; // Variável para o sintetizador de som
+
+        function setup() {
+            // Ajusta o tamanho da tela dinamicamente para caber perfeitamente no celular
+            createCanvas(windowWidth, windowHeight);
+            
+            // Configura o oscilador de som (Sintetizador)
+            osc = new p5.Oscillator('sine'); // Onda senoidal (som suave)
+            osc.amp(0);                      // Começa mudo
+            osc.start();
+        }
+
+        function draw() {
+            background(20, 90, 210);
+            strokeWeight(4); 
+            stroke("white");
+            
+            // No Android/Mobile usamos 'touches' para detectar a posição do dedo.
+            // Se não houver toque, usamos o mouseX e mouseY padrão.
+            let targetX = mouseX;
+            let targetY = mouseY;
+            
+            if (touches.length > 0) {
+                targetX = touches[0].x;
+                targetY = touches[0].y;
+            }
+            
+            for (let posX = 0; posX < width; posX += espacamento) {
+                for (let posY = 0; posY < height; posY += espacamento) {
+                    
+                    // 1. EFEITO FINGER TOUCH: Calcula a distância do dedo até o ponto atual
+                    let d = dist(targetX, targetY, posX, posY);
+                    
+                    let onda = cos(posX * 0.05 + frameCount * 0.05);
+                    
+                    let offsetX = 0;
+                    let offsetY = onda * 15;
+                    
+                    // Se o dedo estiver perto (menos de 80 pixels), distorcemos o ponto
+                    if (d < 80) {
+                        // Cria uma força de repulsão baseada na proximidade do dedo
+                        let forca = map(d, 0, 80, 20, 0); 
+                        offsetY += forca * onda; // Distorce a onda no toque do dedo
+                    }
+
+                    point(posX + offsetX, posY + offsetY);
+                } 
+            }
+        }
+
+        // Redimensiona a tela caso o usuário vire o celular de lado (Landscape)
+        function windowResized() {
+            resizeCanvas(windowWidth, windowHeight);
+        }
+
+        // 2. DISPARADOR DE SONS ALEATÓRIOS AO TOCAR/CLICAR
+        function mousePressed() {
+            // Ativa o contexto de áudio (vital para o Android liberar o som no primeiro toque)
+            if (getAudioContext().state === 'suspended') {
+                getAudioContext().resume();
+            }
+
+            // Escolhe uma frequência aleatória entre 200Hz e 800Hz
+            let frequenciaAleatoria = random(200, 800);
+            osc.freq(frequenciaAleatoria);
+            
+            // Dá um "gatilho" no volume (sobe rápido e desce sumindo)
+            osc.amp(0.3, 0.05);   // Volume 0.3 em 0.05 segundos
+            osc.amp(0, 0.4, 0.1); // Vai para 0 em 0.4 segundos
+        }
+
+        // --- ADAPTAÇÃO EXCLUSIVA PARA ANDROID (MOBILE) ---
+        function touchStarted() {
+            mousePressed(); // Dispara o som no toque mobile
+            return false;   // CRÍTICO PARA ANDROID: Impede que a tela se mova ou dê zoom ao tocar
+        }
+
+        function touchMoved() {
+            return false;   // CRÍTICO PARA ANDROID: Impede o "arrastar para atualizar" do navegador
+        }
+    </script>
+</body>
+</html>
