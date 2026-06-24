@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meus Trabalhos com p5.js</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        header {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 2rem 0;
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        h1 {
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.1rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: white;
+        }
+
+        .hero h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .portfolio {
+            padding: 4rem 2rem;
+        }
+
+        .portfolio h2 {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+            font-size: 2rem;
+        }
+
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .project-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .project-preview {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .project-info {
+            padding: 1.5rem;
+        }
+
+        .project-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .project-description {
+            color: #666;
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .project-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.7rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: opacity 0.3s ease;
+            font-weight: 600;
+        }
+
+        .project-link:hover {
+            opacity: 0.9;
+        }
+
+        .empty-message {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 3rem 2rem;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        footer {
+            background: rgba(0, 0, 0, 0.2);
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 4rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .hero h2 {
+                font-size: 1.5rem;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Meus Trabalhos</h1>
+            <p class="subtitle">Criados com p5.js</p>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h2>Bem-vindo ao meu portfólio</h2>
+                <p>Explore meus projetos e criações com p5.js</p>
+            </div>
+        </section>
+
+        <section class="portfolio">
+            <div class="container">
+                <h2>Galeria de Projetos</h2>
+                <div class="projects-grid" id="projectsGrid">
+                    <div class="empty-message">
+                        Seus projetos aparecerão aqui. Adicione-os ao array no código!
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Meus Trabalhos com p5.js. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Array de projetos - EDITE AQUI PARA ADICIONAR SEUS TRABALHOS
+        const projects = [
+            // {
+            //     title: "Nome do Projeto",
+            //     description: "Descrição do seu projeto p5.js",
+            //     link: "caminho/para/seu/projeto.html",
+            //     icon: "🎨"
+            // }
+        ];
+
+        // Renderizar projetos
+        function renderProjects() {
+            const grid = document.getElementById('projectsGrid');
+            
+            if (projects.length === 0) {
+                return; // Mantém a mensagem vazia
+            }
+
+            grid.innerHTML = '';
+            
+            projects.forEach(project => {
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.innerHTML = `
+                    <div class="project-preview">${project.icon}</div>
+                    <div class="project-info">
+                        <div class="project-title">${project.title}</div>
+                        <p class="project-description">${project.description}</p>
+                        <a href="${project.link}" class="project-link">Ver Projeto</a>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Inicializar ao carregar a página
+        window.addEventListener('DOMContentLoaded', renderProjects);
+    </script>
+</body>
+</html>
